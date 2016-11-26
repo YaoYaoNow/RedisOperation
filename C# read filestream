@@ -1,0 +1,6 @@
+ FileStream fsRead = new FileStream(localFile, FileMode.Open);
+                int fsLen = (int)fsRead.Length;
+                byte[] heByte = new byte[fsLen];
+                int r = fsRead.Read(heByte, 0, heByte.Length);
+                String content = Encoding.GetEncoding("GB2312").GetString(heByte);
+                fsRead.Close();
