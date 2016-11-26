@@ -1,0 +1,39 @@
+public void ReadFileToRedis(StackExchange.Redis.IDatabase database, String source, String destination)
+        {
+            try
+            {
+                if (database != null)
+                {
+                    //c#文件流读文件 
+                    FileStream fsRead = new FileStream(source, FileMode.Open);
+                    int fsLen = (int)fsRead.Length;
+                    byte[] readBytes = new byte[fsLen];
+                    int r = fsRead.Read(readBytes, 0, readBytes.Length);
+                    fsRead.Close();
+
+                    // byte[] to string
+                    String sourceBitConent = BitConverter.ToString(readBytes);
+
+                    // 存、取数据库
+                    database.StringSet("808MDIT", sourceBitConent);
+                    String readBitConent = database.StringGet("808MDIT");
+
+                    // string to byte[]
+                    String[] bitArray = readBitConent.Split('-');
+                    byte[] writeBytes = new byte[bitArray.Length];
+                    for (int i = 0; i < bitArray.Length; i++)
+                        writeBytes[i] = Convert.ToByte(bitArray[i], 16);
+
+                    // 写文件
+                    FileStream fsWrite = new FileStream(destination, FileMode.Create);
+                    fsWrite.Write(writeBytes, 0, writeBytes.Length);
+                    fsWrite.Close();
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("ReadFileToRedis" + ":" + ex.Message);
+            }
+        }
+    }
+}
